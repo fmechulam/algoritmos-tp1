@@ -3,10 +3,10 @@
 
 using namespace std;
 
-ifstream abrir_archivo(string file_name) {
+ifstream abrir_archivo (string file_name) {
     ifstream archivo;
     archivo.open(file_name);
-    if (!archivo) {
+    if(!archivo) {
         cout << "Error al abrir el archivo" << endl;
         EXIT_FAILURE;
     }
@@ -14,11 +14,12 @@ ifstream abrir_archivo(string file_name) {
 }
 
 int mejor_cliente(int listado[], int largo) {
+    
     int max = 0;
     int pos;
     
-    for (int a=0; a<largo; a++) {
-        if (listado[a] > max) {
+    for(int a=0; a<largo; a++) {
+        if(listado[a] > max) {
             max = listado[a];
             pos = a;
         }
@@ -28,15 +29,15 @@ int mejor_cliente(int listado[], int largo) {
 
 void ordenar_keys(float vec[], int keys[], int dim) {
 
-    for (int b = 0; b < dim; b++) {
+    for(int b=0; b<dim; b++) {
         keys[b] = b;
     }
 
     float aux;
 
-    for (int c = 0; c < dim; c++) {
-        for (int d = c + 1; d < dim; d++) {
-            if (vec[c] > vec[d]) {
+    for(int c=0; c<dim; c++) {
+        for(int d=c+1; d<dim; d++) {
+            if(vec[c] > vec[d]) {
                 aux = keys[c];
                 keys[c] = keys[d];
                 keys[d] = aux;
@@ -49,21 +50,17 @@ void ordenar_keys(float vec[], int keys[], int dim) {
 int main() {
 
     ifstream archivo_nombres = abrir_archivo("Nombres.txt");
-
     const int cant_c = 8;
-
-    // leer archivo "nombres.txt". Crear un arreglo con los nombres de clientes y otro arrglo con los nombres de productos
     string clientes[cant_c];
     const int cant_p = 5;
     string productos[cant_p];
     int largo = cant_p + cant_c;
     int r=0;
-    for (int a=0; a<largo ; a++){
 
+    for (int a=0; a<largo ; a++){ //leer archivo "nombres.txt". Crear un arreglo con los nombres de clientes y otro arrglo con los nombres de productos
         if(a<cant_c) {
             archivo_nombres >> clientes[a];
         }
-
         else {
             archivo_nombres >> productos[r];
             r++;
@@ -71,8 +68,8 @@ int main() {
     }
     archivo_nombres.close();
 
-    // leer archivo "Datos.txt". Crear listados con los datos y guardar informacion necesaria para próximos puntos
     ifstream archivo_datos = abrir_archivo("Datos.txt");
+
     int codigo_cliente;
     int codigo_producto;
     float peso;
@@ -80,49 +77,48 @@ int main() {
     float producto_por_cliente[cant_c][cant_p] {0};
     float kilometro_por_producto [cant_c][cant_p] {0};
     int entregas_por_producto[cant_p] {0};
+
     while (archivo_datos >> codigo_cliente) {
         archivo_datos >> codigo_producto;
         archivo_datos >> peso;
         archivo_datos >> distancia;
         producto_por_cliente[codigo_cliente][codigo_producto] += peso;
         kilometro_por_producto[codigo_cliente][codigo_producto] += distancia;
-
-        for(int i=0; i<cant_p; i++) {
-            if(codigo_producto == i) {
-                entregas_por_producto[i] ++;
-            }
-        }
+        entregas_por_producto[codigo_producto] ++;
     }
     archivo_datos.close();
 
-    // mostrar por pantalla un listado de los clientes con productos mayores a 13000
     cout << "Lista de productos por cliente mayores a 13000:" << endl;
-    cout << "Cliente\tProducto\tPeso" << endl;
-    cout << "=======\t============\t====" << endl;
+    cout << "Cliente\t\tProductos"<< endl;
+    cout << "=======\t\t============" << endl;
     
     int clientes_con_mas_de_13000[cant_c] {0};
 
     for (int b=0; b<cant_c; b++) {
+        cout << clientes[b] << "\t";
+        
+        if(b < 6) cout << '\t';
+        
         for (int c=0; c<cant_p; c++) {
             if (producto_por_cliente[b][c] > 13000) {
-                cout << clientes[b] << "\t" << productos[c] << "\t" << producto_por_cliente[b][c] << endl; 
+                cout <<productos[c] << "\t";
                 clientes_con_mas_de_13000[b]++;
             }
         }
+        cout << endl;
     }
 
     cout<<"--------------------------------------"<<endl;
 
-    // mostrar por pantalla el cliente con mas productos que superen 13000 (mejor cliente), y el orden ascendente de sus productos por distancia recorrida 
     int pos = mejor_cliente(clientes_con_mas_de_13000, cant_c);
-    int keys[cant_p];
+
+    int keys [cant_p];
 
     ordenar_keys(kilometro_por_producto[pos], keys, cant_p);
     
     cout<<"el cliente con mas productos que superaron 13000 es "<<clientes[pos]<<", y el orden ascendente de sus productos por distancia recorrida es: "<<endl;
     cout<<endl;
 
-    // mostrar el producto con mas entregas
     for(int d=0; d<cant_p; d++) {
     cout<<productos[keys[d]]<<"\t"<<kilometro_por_producto[pos][keys[d]]<<" kms"<<endl;
     }
@@ -133,6 +129,3 @@ int main() {
 
     return 0; 
 }
-
-
-    
